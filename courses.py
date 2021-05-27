@@ -37,7 +37,7 @@ def getStart(lvl, course=1):
         nPos = pos[-1]
     return nPos
 
-#getting coins 
+# getting coins
 def coinHit(lvl):
     for x in course1[lvl]:
         if len(x) > 4:
