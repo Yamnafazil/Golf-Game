@@ -1,4 +1,4 @@
-import subprocess
+mport subprocess
 import sys
 import get_pip
 import os
@@ -127,3 +127,201 @@ class scoreSheet():
         self.height = 510
         self.font = pygame.font.SysFont('comicsansms', 22)
         self.bigFont = pygame.font.SysFont('comicsansms', 30)
+
+    def getScore(self):
+        return sum(self.strokes) - sum(self.parList[:len(self.strokes)])
+
+    def getPar(self):
+        return self.par
+
+    def getStrokes(self):
+        return sum(self.strokes)
+
+    def drawSheet(self, score=0):
+        self.strokes.append(score)
+        grey = (220, 220, 220)
+
+        text = self.bigFont.render('Strokes: ' + str(sum(self.strokes)), 1, grey)
+        self.win.blit(text, (800, 330))
+        text = self.bigFont.render('Par: ' + str(self.par), 1, grey)
+        self.win.blit(text, (240 - (text.get_width()/2), 300 - (text.get_height()/2)))
+        text = self.bigFont.render('Score: ', 1, grey)
+        self.win.blit(text, (800, 275))
+
+        scorePar = sum(self.strokes) - sum(self.parList[:len(self.strokes)])
+        if scorePar < 0:
+            color = (0,166,0)
+        elif scorePar > 0:
+            color = (255,0,0)
+        else:
+            color = grey
+
+        textt = self.bigFont.render(str(scorePar), 1, color)
+        win.blit(textt, (805 + text.get_width(), 275))
+
+        startx = self.winwidth/2 - self.width /2
+        starty = self.winheight/2 - self.height/2
+        pygame.draw.rect(self.win, grey, (startx, starty, self.width, self.height))
+
+        # Set up grid
+        for i in range(1,4):
+            # Column Lines
+            pygame.draw.line(self.win, (0,0,0), (startx + (i * (self.width/3)), starty), (startx + (i * (self.width/3)), starty + self.height), 2)
+        for i in range(1, 11):
+            # Rows
+            if i == 1:  # Display all headers for rows
+                blit = self.font.render('Hole', 2, (0,0,0))
+                self.win.blit(blit, (startx + 40, starty + 10))
+                blit = self.font.render('Par', 2, (0,0,0))
+                self.win.blit(blit, (startx + 184, starty + 10))
+                blit = self.font.render('Stroke', 2, (0,0,0))
+                self.win.blit(blit, (startx + 295, starty + 10))
+                blit = self.font.render('Press the mouse to continue...', 1, (128,128,128))
+                self.win.blit(blit, (384, 565))
+            else:  # Populate rows accordingly
+                blit = self.font.render(str(i - 1), 1, (128,128,128))
+                self.win.blit(blit, (startx + 56, starty + 10 + ((i - 1) * (self.height/10))))
+
+                blit = self.font.render(str(self.parList[i - 2]), 1, (128,128,128))
+                self.win.blit(blit, (startx + 60 + 133, starty + 10 + ((i - 1) * (self.height/10))))
+                try:  # Catch the index out of range error, display the stokes each level
+                    if self.strokes[i - 2] < self.parList[i - 2]:
+                        color = (0,166,0)
+                    elif self.strokes[i - 2] > self.parList[i - 2]:
+                        color = (255,0,0)
+                    else:
+                        color = (0,0,0)
+
+                    blit = self.font.render(str(self.strokes[i - 2]), 1, color)
+                    self.win.blit(blit, ((startx + 60 + 266, starty + 10 + ((i - 1) * (self.height/10)))))
+                except:
+                    blit = self.font.render('-', 1, (128,128,128))
+                    self.win.blit(blit, (startx + 62 + 266, starty + 10 + ((i - 1) * (self.height/10))))
+
+            # Draw row lines
+            pygame.draw.line(self.win, (0,0,0), (startx, starty + (i * (self.height/10))), (startx + self.width, starty + (i * (self.height / 10))), 2)
+
+
+def error():
+    if SOUND:
+        wrong.play()
+    root = tk.Tk()
+    root.attributes("-topmost", True)
+    root.withdraw()
+    messagebox.showerror('Out of Powerups!', 'You have no more powerups remaining for this course, press ok to continue...')
+    try:
+        root.destroy()
+    except:
+        pass
+
+
+def endScreen(): # Display this screen when the user completes trhe course
+    global start, starting, level, sheet, coins
+    starting = True
+    start = True
+
+    # Draw all text to display on screen
+    win.blit(background, (0,0))
+    text = myFont.render('Course Completed!', 1, (64,64,64))
+    win.blit(text, (winwidth/2 - text.get_width()/2, 210))
+    text = parFont.render('Par: ' + str(sheet.getPar()), 1, (64,64,64))
+    win.blit(text, ((winwidth/2 - text.get_width()/2, 320)))
+    text = parFont.render('Strokes: ' + str(sheet.getStrokes()), 1, (64,64,64))
+    win.blit(text, ((winwidth/2 - text.get_width()/2, 280)))
+    blit = parFont.render('Press the mouse to continue...', 1, (64, 64, 64))
+    win.blit(blit, (winwidth/2 - blit.get_width()/2, 510))
+    text = parFont.render('Score: ' + str(sheet.getScore()), 1, (64,64,64))
+    win.blit(text, ((winwidth/2 - text.get_width()/2, 360)))
+    text = parFont.render('Coins Collected: ' + str(coins), 1, (64,64,64))
+    win.blit(text, ((winwidth/2 - text.get_width()/2, 470)))
+    pygame.display.update()
+
+
+    # RE-WRITE TEXT FILE Contaning Scores
+    oldscore = 0
+    oldcoins = 0
+    file = open('scores.txt', 'r')
+    f = file.readlines()
+    for line in file:
+        l = line.split()
+        if l[0] == 'score':
+            oldscore = str(l[1]).strip()
+        if l[0] == 'coins':
+            oldcoins = str(l[1]).strip()
+
+    file = open('scores.txt', 'w')
+    if str(oldscore).lower() != 'none':
+        if sheet.getScore() < int(oldscore):
+            text = myFont.render('New Best!', 1, (64, 64, 64))
+            win.blit(text, (winwidth/2 - text.get_width()/2, 130))
+            pygame.display.update()
+            file.write('score ' + str(sheet.getScore()) + '\n')
+            file.write('coins ' + str(int(oldcoins) + coins) + '\n')
+        else:
+            file.write('score ' + str(oldscore) + '\n')
+            file.write('coins ' + str(int(oldcoins) + coins) + '\n')
+    else:
+        file.write('score ' + str(sheet.getScore()) + '\n')
+        file.write('coins ' + str(int(oldcoins) + coins) + '\n')
+
+    co = 0
+    for line in f:
+        if co > 2:
+            file.write(line)
+        co += 1
+
+    file.close()
+
+    # Wait
+    loop = True
+    while loop:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                loop = False
+                break
+    level = 1
+    setup(level)
+    list = courses.getPar(1)
+    par = list[level - 1]
+    sheet = scoreSheet(list)
+    starting = True
+    hover = False
+    while starting:
+        pygame.time.delay(10)
+        startScreen.mainScreen(hover)
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                hover = startScreen.shopClick(pos)
+                course = startScreen.click(pos)
+                startScreen.mouseOver(course != None)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if startScreen.click(pos) != None:
+                    starting = False
+                    break
+                if startScreen.shopClick(pos) == True:
+                    surface = startScreen.drawShop()
+                    win.blit(surface, (0, 0))
+                    pygame.display.update()
+                    shop = True
+                    while shop:
+                        for event in pygame.event.get():
+                            pygame.time.delay(10)
+                            if event.type == pygame.QUIT:
+                                pygame.quit()
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                pos = pygame.mouse.get_pos()
+                                if pos[0] > 10 and pos[0] < 100 and pos[1] > 560:
+                                    shop = False
+                                    break
+                                surface = startScreen.drawShop(pos, True)
+                                win.blit(surface, (0, 0))
+                                pygame.display.update()
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                break
+
