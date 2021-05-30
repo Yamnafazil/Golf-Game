@@ -1,5 +1,3 @@
-# the code is taken from a github
-
 import subprocess
 import sys
 import get_pip
@@ -31,7 +29,7 @@ except:
             print("[GAME] Pygame has been installed")
         except:
             print("[ERROR 1] Pygame could not be installed")
-#importing modules and files
+
 import pygame
 import physics
 import math
@@ -66,3 +64,66 @@ sticky = pygame.image.load(os.path.join('img', 'sticky.png'))
 coinPics = [pygame.image.load(os.path.join('img', 'coin1.png')), pygame.image.load(os.path.join('img', 'coin2.png')), pygame.image.load(os.path.join('img', 'coin3.png')), pygame.image.load(os.path.join('img', 'coin4.png')), pygame.image.load(os.path.join('img', 'coin5.png')), pygame.image.load(os.path.join('img', 'coin6.png')), pygame.image.load(os.path.join('img', 'coin7.png')), pygame.image.load(os.path.join('img', 'coin8.png'))]
 powerMeter = pygame.image.load(os.path.join('img', 'power.png'))
 powerMeter = pygame.transform.scale(powerMeter, (150,150))
+
+# SET ICON
+pygame.display.set_icon(icon)
+
+# GLOBAL VARIABLES
+coinTime = 0
+coinIndex = 0
+time = 0
+rollVel = 0
+strokes = 0
+par = 0
+level = 8
+flagx = 0
+coins = 0
+shootPos = ()
+ballColor = (255,255,255)
+ballStationary = ()
+line = None
+power = 0
+hole = ()
+objects = []
+put = False
+shoot = False
+start = True
+
+# LOAD MUSIC
+if SOUND:
+    wrong = pygame.mixer.Sound(os.path.join('sounds', 'wrong12.wav'))
+    puttSound = pygame.mixer.Sound(os.path.join('sounds', 'putt.wav'))
+    inHole = pygame.mixer.Sound(os.path.join('sounds', 'inHole.wav'))
+    song = pygame.mixer.music.load(os.path.join('sounds', 'music.mp3'))
+    splash = pygame.mixer.Sound(os.path.join('sounds', 'splash.wav'))
+    pygame.mixer.music.play(-1)
+
+# POWER UP VARS
+powerUps = 7
+hazard = False
+stickyPower = False
+mullagain = False
+superPower = False
+powerUpButtons = [[900, 35, 20, 'P', (255,0,0)],[1000, 35, 20, 'S', (0,255,0)], [950, 35, 20, 'M', (0,0,255)]]
+
+# FONTS
+myFont = pygame.font.SysFont('comicsansms', 50)
+parFont = pygame.font.SysFont('comicsansms', 30)
+
+win = pygame.display.set_mode((winwidth, winheight))
+
+class scoreSheet():
+    def __init__(self, parr):
+        self.parList = parr
+        self.par = sum(self.parList)
+        self.holes = 9
+        self.finalScore = None
+        self.parScore = 0
+        self.strokes = []
+        self.win = win
+        self.winwidth = winwidth
+        self.winheight = winheight
+        self.width = 400
+        self.height = 510
+        self.font = pygame.font.SysFont('comicsansms', 22)
+        self.bigFont = pygame.font.SysFont('comicsansms', 30)
