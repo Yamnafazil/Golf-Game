@@ -143,8 +143,8 @@ class scoreSheet():
         self.strokes.append(score)
         grey = (220, 220, 220)
 
-        text = self.bigFont.render('Strokes: ' + str(sum(self.strokes)), 1, grey) #Pygame does not provide a direct way to write text onto a Surface object. The method render() must be used to create a Surface object from the text
-        self.win.blit(text, (800, 330)) #  blit copy the contents of one Surface onto another Surface 
+        text = self.bigFont.render('Strokes: ' + str(sum(self.strokes)), 1, grey)
+        self.win.blit(text, (800, 330))
         text = self.bigFont.render('Par: ' + str(self.par), 1, grey)
         self.win.blit(text, (240 - (text.get_width()/2), 300 - (text.get_height()/2)))
         text = self.bigFont.render('Score: ', 1, grey)
@@ -168,7 +168,7 @@ class scoreSheet():
         # Set up grid
         for i in range(1,4):
             # Column Lines
-            pygame.draw.line(self.win, (0,0,0), (startx + (i * (self.width/3)), starty), (startx + (i * (self.width/3)), starty + self.height), 2) # Draws a line between the coordinates in the xy list.
+            pygame.draw.line(self.win, (0,0,0), (startx + (i * (self.width/3)), starty), (startx + (i * (self.width/3)), starty + self.height), 2)
         for i in range(1, 11):
             # Rows
             if i == 1:  # Display all headers for rows
@@ -277,7 +277,7 @@ def endScreen(): # Display this screen when the user completes trhe course
     # Wait
     loop = True
     while loop:
-        for event in pygame.event.get(): #Pygame will register all events from the user into an event queue which can be received with the code pygame. event. get() 
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -299,7 +299,7 @@ def endScreen(): # Display this screen when the user completes trhe course
                 hover = startScreen.shopClick(pos)
                 course = startScreen.click(pos)
                 startScreen.mouseOver(course != None)
-            if event.type == pygame.MOUSEBUTTONDOWN: #The mouse functions can be used to get the current state of the mouse device.
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if startScreen.click(pos) != None:
                     starting = False
